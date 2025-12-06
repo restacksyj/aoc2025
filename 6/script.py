@@ -30,10 +30,15 @@ with open("input2.txt", "r") as f:
         i+=1
     ops = ops[1:]
     #print(ops)
+    print(len(newls))
 
     final = []
-    for q,s in enumerate(newls):
-        parts = [s[i:i+ops[q]] for i in range(0, len(s), ops[q])]
+    for s in newls:
+        parts = []
+        z = 0
+        for n in ops:
+            parts.append(s[z:z+n])
+            z += n
         final.append(parts)
 
     final = final[:-1]
@@ -47,7 +52,6 @@ with open("input2.txt", "r") as f:
         for i in range(m):
             temp.append(final[i][j])
         newt = []
-        #print(temp)
         digits = len(temp[0])
         nums = []
 
