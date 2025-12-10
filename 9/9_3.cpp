@@ -1,10 +1,9 @@
 #include <bits/stdc++.h>
 #include <climits>
-#include <queue>
 using namespace std;
 
 int main() {
-  ifstream f("input1.txt");
+  ifstream f("input1_1.txt");
 
   if (!f.is_open()) {
     cerr << " error opening file" << endl;
@@ -13,8 +12,8 @@ int main() {
 
   string s;
   vector<pair<long long, long long>> mmv;
-  unordered_map<long long, vector<long long>> ux;
-  unordered_map<long long, vector<long long>> uy;
+  unordered_map<long long, set<long long>> ux;
+  unordered_map<long long, set<long long>> uy;
   set<pair<long long, long long>> se;
   long long maxx = LLONG_MIN;
   long long maxy = LLONG_MIN;
@@ -28,108 +27,130 @@ int main() {
     }
     long long x = vec[1];
     long long y = vec[0];
-    // se.insert({x, y});
     mmv.push_back({x, y});
     maxx = max(maxx, x);
     maxy = max(maxy, y);
   }
 
-  // vector<vector<char>> grid(maxx + 1, vector<char>(maxy + 1, '.'));
-  //  auto printGrid = [&]() {
-  //    for (int i = 0; i < maxx + 1; i++) {
-  //      for (int j = 0; j < maxy + 1; j++) {
-  //        cout << grid[i][j];
-  //      }
-  //      cout << "\n";
-  //    }
-  //    cout << "\n";
-  //  };
-
+  vector<vector<char>> grid(maxx + 1, vector<char>(maxy + 1, '.'));
   for (size_t i = 0; i < mmv.size(); i++) {
     long long x1 = (mmv[i].first);
     long long y1 = (mmv[i].second);
-    ux[x1].push_back(y1);
-    uy[y1].push_back(x1);
+    ux[x1].insert(y1);
+    uy[y1].insert(x1);
+    grid[x1][y1] = '#';
   }
+  for (int i = 0; i < maxx + 1; i++) {
+    for (int j = 0; j < maxy + 1; j++) {
+      cout << grid[i][j];
+    }
+    cout << "\n";
+  }
+  cout << "\n";
 
-  cout << "came here" << ux.size() << endl;
+  // for (auto it : ux) {
+  //   for (auto elem : it.second) {
+  //     se.insert({it.first, elem});
+  //     grid[it.first][elem] = 'x';
+  //   }
+  // }
+
   for (auto it : ux) {
-    sort(begin(it.second), end(it.second));
-    long long end = it.second[(int)it.second.size() - 1];
-    long long start = it.second[0];
+    long long start = *it.second.begin();
+    long long end = *it.second.rbegin();
     for (long long j = start; j <= end; j++) {
       se.insert({it.first, j});
+      grid[it.first][j] = 'x';
     }
   }
 
-  cout << "came here 2 " << uy.size() << endl;
+  // for (auto it : uy) {
+  //   for (auto elem : it.second) {
+  //     se.insert({elem, it.first});
+  //     grid[elem][it.first] = 'x';
+  //   }
+  // }
+  //
   for (auto it : uy) {
-    sort(begin(it.second), end(it.second));
-    long long end = it.second[(int)it.second.size() - 1];
-    long long start = it.second[0];
+    long long start = *it.second.begin();
+    long long end = *it.second.rbegin();
     for (long long j = start; j <= end; j++) {
       se.insert({j, it.first});
+      grid[j][it.first] = 'x';
     }
   }
+  for (int i = 0; i < maxx + 1; i++) {
+    for (int j = 0; j < maxy + 1; j++) {
+      cout << grid[i][j];
+    }
+    cout << "\n";
+  }
+  cout << "\n";
+
   unordered_map<long long, set<long long>> lmap;
-  // unordered_map<long long, set<long long>> lmap2;
-  cout << "came here 3 " << se.size() << endl;
+  unordered_map<long long, set<long long>> umap;
   for (auto elem : se) {
     long long x1 = elem.first;
     long long y1 = elem.second;
     lmap[x1].insert(y1);
-    // lmap2[y1].insert(x1);
-    // lmap[y1].insert(x1);
+    umap[y1].insert(x1);
   }
 
-  cout << "came here 4 " << ux.size() << endl;
-  // for (auto it : ux) {
-  //   sort(begin(it.second), end(it.second));
-  //   long long end = it.second[(int)it.second.size() - 1];
-  //   long long start = it.second[0];
-  //   for (long long j = start; j <= end; j++) {
-  //     se.insert({it.first, j});
-  //   }
-  // }
-  // for (auto it : lmap) {
-  //   cout << it.first << endl;
-  //   for (auto k : it.second) {
-  //     cout << k << " ";
-  //   }
-  //   cout << endl;
-  // }
-  // for (auto it : lmap2) {
-  //   for (auto k : it.second) {
-  //     cout << k << " ";
-  //   }
-  //   cout << endl;
-  // }
+  unordered_map<long long, long long> colMin;
+  unordered_map<long long, long long> colMax;
+  for (auto &it : lmap) {
+    colMin[it.first] = *it.second.begin();
+    colMax[it.first] = *it.second.rbegin();
+  }
 
-  // for (auto k : se) {
-  //   grid[k.first][k.second] = 'x';
-  // }
-  // printGrid();
-
-  cout << "came here 5" << endl;
   long long maxi = LLONG_MIN;
   for (size_t i = 0; i < mmv.size(); i++) {
     for (size_t j = i + 1; j < mmv.size(); j++) {
       long long x1 = (mmv[i].first);
-      long long x2 = (mmv[j].first);
       long long y1 = (mmv[i].second);
+      long long x2 = (mmv[j].first);
       long long y2 = (mmv[j].second);
-      // cout << x1 << "," << y1 << " " << x2 << "," << y2 << endl;
       long long p1 = *lmap[x1].begin();
-      long long p2 = *lmap[x1].end();
+      long long p2 = *lmap[x1].rbegin();
       long long p3 = *lmap[x2].begin();
-      long long p4 = *lmap[x2].end();
-      if (y2 >= p1 && y2 <= p2 && y1 >= p3 && y1 <= p4) {
-        maxi = max(maxi, (abs(y2 - y1) + 1) * (abs(x2 - x1) + 1));
+      long long p4 = *lmap[x2].rbegin();
+      // long long area = (abs(y2 - y1) + 1) * (abs(x2 - x1) + 1);
+      //  if (area == 72) {
+      //    cout << p1 << " " << p2 << endl;
+      //    cout << p3 << " " << p4 << endl;
+      //    cout << x1 << y1 << x2 << y2 << endl;
+      //  }
+      long long Xlo = min(x1, x2);
+      long long Xhi = max(x1, x2);
+      long long Ylo = min(y1, y2);
+      long long Yhi = max(y1, y2);
+
+      bool ok = true;
+
+      for (long long X = Xlo; X <= Xhi; X++) {
+        if (!colMin.count(X)) {
+          ok = false;
+          break;
+        }
+        if (colMin[X] > Ylo || colMax[X] < Yhi) {
+          ok = false;
+          break;
+        }
       }
-      // if (lmap[x1].count(y2) > 0 && lmap[x2].count(y1) > 0) {
-      //   maxi = max(maxi, (abs(y2 - y1) + 1) * (abs(x2 - x1) + 1));
-      // }
-      // if (se.count({x1, y2}) > 0 && se.count({x2, y1}) > 0) {
+
+      if (ok) {
+        long long area = (abs(y2 - y1) + 1) * (abs(x2 - x1) + 1);
+        maxi = max(maxi, area);
+      }
+
+      // if (y2 >= p1 && y2 <= p2 && y1 >= p3 && y1 <= p4) {
+      //   long long area = (abs(y2 - y1) + 1) * (abs(x2 - x1) + 1);
+      //   if (area == 120) {
+      //     // y1 to y2 ke beech
+      //     // har ek row main x1 to x2
+      //     // kya y ke map main saara interval exist karta hai
+      //     cout << x1 << y1 << x2 << y2 << endl;
+      //   }
       //   maxi = max(maxi, (abs(y2 - y1) + 1) * (abs(x2 - x1) + 1));
       // }
     }

@@ -1,0 +1,3 @@
+/Users/restacksyj/Documents/personal/aoc2025/10/CMakeFiles/output.dir
+/Users/restacksyj/Documents/personal/aoc2025/10/CMakeFiles/edit_cache.dir
+/Users/restacksyj/Documents/personal/aoc2025/10/CMakeFiles/rebuild_cache.dir
